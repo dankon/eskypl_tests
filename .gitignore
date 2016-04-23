@@ -61,7 +61,10 @@ target/
 #Ipython Notebook
 .ipynb_checkpoints
 
-# Eclipse pyDev
+# Eclipse and pyDev files
 .project
 .pydevproject
 .settings/
+
+# Webdrive examples folder
+webdriver_tutorial_examples/
