@@ -17,7 +17,10 @@ def main():
     print "Task #1: opening website: %s" % main_url
     esky_wd.get(main_url)
     # 2.       Pobranie i wyświetlenie w konsoli wartości ciastka esky_TCSI
-
+    cookie_name = "esky_TCSI"
+    print "Task #2: display value of cookie %s: %s" % (
+        cookie_name, esky_wd.get_cookie(cookie_name)["value"]
+    )
     # 3.       Wypełnienie danych formularza wyszukiwania 
     #(parametryzowane destynacje oraz daty wylotu/powrotu wyliczane zawsze 3mce do przodu)
 
