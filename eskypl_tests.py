@@ -6,6 +6,7 @@ by Selenium/Webdriver Python module.
 """
 from datetime import date
 from time import sleep
+from random import sample
 
 from dateutil.relativedelta import relativedelta
 from selenium import webdriver
@@ -72,13 +73,33 @@ def fill_flights_form(flights_form, departure, arrival, dep_date):
     click_date_on_calendar(flights_form.find_element_by_xpath("//*[@id='ui-datepicker-div']"),
                            dep_date + relativedelta(months=+3)
                            )
-def click_filter(filters_div, filter_grp_id, filter_id):    
+
+
+def click_filter(filters_div, filter_grp_id, filter_id): 
+    """
+    Function for select/deselect chosen filter by filter_id:
+    Params:
+    # filters_div - holder of all filters as selenium/webdriver object
+    # filter_grp_id - id of group of filter contain choosen one
+    """   
     filter_container = filters_div.find_element_by_xpath("./div/div[@data-dropdown-content-id='%s']" % filter_grp_id)
     filter = filters_div.find_element_by_id(filter_id)
     if not filter_container.is_displayed():
         filters_div.find_element_by_xpath("./div/a[@data-content-id='%s']" % filter_grp_id).click()
     filter.click()
+
     
+def fill_payments_form(payments_form, first_name, last_name, gender, phone_number, email_address):
+    """
+    Function for fill up payments form.
+    With first_name, last_name, gender, phone_number 
+     and email_address as params.
+    gender value "F" means female and "M" means male
+    """
+    _genders = ["F", "M"]
+    if not gender in _genders:
+        raise Exception('Bad gender value %s - please choose from %s' % (gender, _genders))
+
 
 def main():
     """
@@ -125,17 +146,31 @@ def main():
                  filter_grp_id = 'filterDepartureTime0', 
                  filter_id = "filterDepartureTime0_opt_12_18") 
     print "Task #4: using filters on results website"
-    sleep(3)
-    
     # 5.       Pobieranie kilku istotnych elementów pojedynczego lotu
-
+    available_flights_div = wait.until(
+        expected_conditions.visibility_of_element_located((By.ID, "available-flights"))    
+    )
+    available_flights = available_flights_div.find_elements_by_tag_name("form")
     # 6.       Przejście na kolejny ekran płatności i wypełnienie formularza dowolnymi wartościami 
     # spełniającymi reguły walidacji
-
+    sample(available_flights, 1)[0].find_element_by_xpath("./div[1]/a").click()
+    payment_website_title = u"eSky: Hamburg - Katowice"
+    wait.until(
+        expected_conditions.title_is(payment_website_title)
+    )
+    assert esky_wd.title == payment_website_title
+    payments_form = None
+    fill_payments_form(payments_form, 
+                       first_name="John", 
+                       last_name="Doe", 
+                       gender="M", 
+                       phone_number=789456123, 
+                       email_address="john.doe@hotmail.com")
+    print "Task #6 fill up payments form"
     # 7.       Wykonanie kilku asercji, biorąc pod uwagę dane uzyskane na formularzu wyszukiwania, 
     # wynikach i ekranie płatności.
-    
-    esky_wd.close()
+
+#     esky_wd.close()
 
 if __name__ == "__main__":
     print "START"
