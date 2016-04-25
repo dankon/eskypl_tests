@@ -7,8 +7,11 @@ by Selenium/Webdriver Python module.
 from datetime import date
 from time import sleep
 
-from selenium import webdriver
 from dateutil.relativedelta import relativedelta
+from selenium import webdriver
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.common.by import By
 
 MONTHS_PL = {1 : u"styczeń",   
              2 : u"luty",
@@ -71,6 +74,7 @@ def fill_flights_form(flights_form, departure, arrival, dep_date):
                            )
     
 
+
 def main():
     """
     Main program for realization of esky.pl task 
@@ -97,7 +101,16 @@ def main():
                       )
     flights_form.submit()
     # 4.       Wykonanie prostego filtrowania na wynikach wyszukiwania (dowolna kombinacja)
-
+    wait = WebDriverWait(esky_wd, 10)
+    filters_div = wait.until(
+        expected_conditions.visibility_of_element_located((By.ID, "filters"))    
+    )
+    filters_div.find_element_by_xpath("./div/span[@class='filters-text']").click()
+    filters_div.find_element_by_xpath("./div/a[@data-content-id='filterConnections']").click()
+    filters_div.find_element_by_id("filterConnections_opt_1").click()
+    print "Task #4: using filters on results website"
+    sleep(5)
+    
     # 5.       Pobieranie kilku istotnych elementów pojedynczego lotu
 
     # 6.       Przejście na kolejny ekran płatności i wypełnienie formularza dowolnymi wartościami 
