@@ -72,8 +72,13 @@ def fill_flights_form(flights_form, departure, arrival, dep_date):
     click_date_on_calendar(flights_form.find_element_by_xpath("//*[@id='ui-datepicker-div']"),
                            dep_date + relativedelta(months=+3)
                            )
+def click_filter(filters_div, filter_grp_id, filter_id):    
+    filter_container = filters_div.find_element_by_xpath("./div/div[@data-dropdown-content-id='%s']" % filter_grp_id)
+    filter = filters_div.find_element_by_id(filter_id)
+    if not filter_container.is_displayed():
+        filters_div.find_element_by_xpath("./div/a[@data-content-id='%s']" % filter_grp_id).click()
+    filter.click()
     
-
 
 def main():
     """
@@ -105,11 +110,22 @@ def main():
     filters_div = wait.until(
         expected_conditions.visibility_of_element_located((By.ID, "filters"))    
     )
-    filters_div.find_element_by_xpath("./div/span[@class='filters-text']").click()
-    filters_div.find_element_by_xpath("./div/a[@data-content-id='filterConnections']").click()
-    filters_div.find_element_by_id("filterConnections_opt_1").click()
+    filters_div.find_element_by_xpath("./div/span[@class='filters-text']").click() #show filters
+    print "Show filters"
+    click_filter(filters_div,
+                 filter_grp_id = 'filterConnections', 
+                 filter_id = "filterConnections_opt_1")
+    click_filter(filters_div,
+                 filter_grp_id = 'filterDepartureTime0', 
+                 filter_id = "filterDepartureTime1_opt_12_18")    
+    click_filter(filters_div,
+                 filter_grp_id = 'filterDepartureTime0', 
+                 filter_id = "filterDepartureTime0_opt_12_18") 
+    click_filter(filters_div,
+                 filter_grp_id = 'filterDepartureTime0', 
+                 filter_id = "filterDepartureTime0_opt_12_18") 
     print "Task #4: using filters on results website"
-    sleep(5)
+    sleep(3)
     
     # 5.       Pobieranie kilku istotnych elementów pojedynczego lotu
 
