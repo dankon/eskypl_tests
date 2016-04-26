@@ -50,10 +50,10 @@ def click_date_on_calendar(calendar_div, dt_date):
             break
 
 
-def fill_flights_form(flights_form, departure, arrival, dep_date):
+def fill_flights_form(flights_form, departure, arrival, departure_date):
     """
     Function for fill up flights form.
-    With departure, arrival and departure date (dep_date) as params.
+    With departure, arrival and departure_date as params.
     Return date is equal to departure date plus 3 months.
     """
     departure_input = flights_form.find_element_by_id("departureRoundtrip0")
@@ -66,13 +66,13 @@ def fill_flights_form(flights_form, departure, arrival, dep_date):
     dep_date_input.click()
     sleep(1)
     click_date_on_calendar(flights_form.find_element_by_xpath("//*[@id='ui-datepicker-div']"),
-                           dep_date
+                           departure_date
                            )
 
     return_date_input = flights_form.find_element_by_id("departureDateRoundtrip1")
     return_date_input.click()
     click_date_on_calendar(flights_form.find_element_by_xpath("//*[@id='ui-datepicker-div']"),
-                           dep_date + relativedelta(months=+3)
+                           departure_date + relativedelta(months=+3)
                            )
 
 
@@ -191,13 +191,12 @@ def fill_payments_form(payments_form,
     payments_form.find_element_by_id("bookFlight_statute").click()
 
 
-def main():
+def main(main_url, test_params):
     """
     Main program for realization of esky.pl task 
-    with guidelines from eskypl_guidelines_in_polish.txt.
+     with guidelines from eskypl_guidelines_in_polish.txt.
     """
     # 1.       Otworzenie strony
-    main_url = "http://www.esky.pl/"
     esky_wd = webdriver.Firefox()
     esky_wd.get(main_url)
     print "Task #1: opening website: %s" % main_url
@@ -210,9 +209,9 @@ def main():
     #(parametryzowane destynacje oraz daty wylotu/powrotu wyliczane zawsze 3mce do przodu)
     flights_form = esky_wd.find_element_by_css_selector("form.flights-qsf")
     fill_flights_form(flights_form, 
-                      departure="Hamburg", 
-                      arrival="Katowice", 
-                      dep_date=date.today()+relativedelta(days=+10)
+                      departure = test_params["flight_data"]["departure"],
+                      arrival = test_params["flight_data"]["arrival"], 
+                      departure_date = test_params["flight_data"]["departure_date"]
                       )
     flights_form.submit()
     print "Task #3: fill up flights form from %s" % main_url
@@ -249,7 +248,8 @@ def main():
     # spełniającymi reguły walidacji
     #TODO: 20160425-02 fix reserve flights issue
     available_flights[0].find_element_by_xpath("./div[1]/a").click()
-    payment_website_title = u"eSky: Hamburg - Katowice"
+    payment_website_title = u"eSky: %s - %s" % (test_params["flight_data"]["departure"],
+                                                test_params["flight_data"]["arrival"])
     wait.until(
         expected_conditions.title_is(payment_website_title)
     )
@@ -257,13 +257,13 @@ def main():
     payments_form = esky_wd.find_element_by_css_selector("form.booking-form")
     #TODO: 20160425-01 fix birthday_date issue
     fill_payments_form(payments_form, 
-                       first_name="John", 
-                       last_name="Doe", 
-                       gender="mr", 
-                       phone_number=789456123, 
-                       email_address="john.doe@hotmail.com",
+                       first_name = test_params["personal_data"]["first_name"], 
+                       last_name = test_params["personal_data"]["last_name"], 
+                       gender = test_params["personal_data"]["gender"], 
+                       phone_number = test_params["personal_data"]["phone_number"], 
+                       email_address = test_params["personal_data"]["email_address"],
 #                        birthday_date=date.today()+relativedelta(years=-20)
-                       )
+                       )  
     payments_form.submit()
     print "Task #6: fill up payments form"
     # 7.       Wykonanie kilku asercji, biorąc pod uwagę dane uzyskane na formularzu wyszukiwania, 
@@ -274,5 +274,17 @@ def main():
 
 if __name__ == "__main__":
     print "START"
-    main()
+    main_url = "http://www.esky.pl/"
+    test_params = {"flight_data" : {"departure" : "Hamburg", 
+                                    "arrival" : "Katowice", 
+                                    "departure_date" : date.today() + relativedelta(days=+10)
+                                    },
+                   "personal_data" : {"first_name" : "John", 
+                                      "last_name" : "Doe", 
+                                      "gender" : "mr", 
+                                      "phone_number" : 789456123, 
+                                      "email_address" : "john.doe@hotmail.com"
+                                      }
+                   }
+    main(main_url, test_params)
     print "STOP"
