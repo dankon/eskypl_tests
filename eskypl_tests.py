@@ -205,16 +205,34 @@ def main(main_url, test_params):
     print "Task #2: display value of cookie %s: %s" % (
         cookie_name, esky_wd.get_cookie(cookie_name)["value"]
     )
+    assert "eSky.pl - Tanie loty" in esky_wd.title
+    print "Task #7: asserts - title assert"
     # 3.       Wypełnienie danych formularza wyszukiwania 
     #(parametryzowane destynacje oraz daty wylotu/powrotu wyliczane zawsze 3mce do przodu)
     flights_form = esky_wd.find_element_by_css_selector("form.flights-qsf")
+    input_departure_value = flights_form.find_element_by_id("departureRoundtrip0")\
+                                        .get_attribute('value')
+    assert test_params["flight_data"]["departure"] != input_departure_value
+    assert input_departure_value in ["", None]
+    input_arrival_value = flights_form.find_element_by_id("arrivalRoundtrip0")\
+                                                        .get_attribute('value')
+    assert test_params["flight_data"]["arrival"] != input_arrival_value
+    assert input_arrival_value == ""
+    print "Task #7: asserts - empty form asserts"    
+    
     fill_flights_form(flights_form, 
                       departure = test_params["flight_data"]["departure"],
                       arrival = test_params["flight_data"]["arrival"], 
                       departure_date = test_params["flight_data"]["departure_date"]
                       )
-    flights_form.submit()
     print "Task #3: fill up flights form from %s" % main_url
+    
+    assert test_params["flight_data"]["departure"] == flights_form.find_element_by_id("departureRoundtrip0")\
+                                                        .get_attribute('value')
+    assert test_params["flight_data"]["arrival"] == flights_form.find_element_by_id("arrivalRoundtrip0")\
+                                                        .get_attribute('value')
+    print "Task #7: asserts - filled up form asserts" 
+    flights_form.submit()
     # 4.       Wykonanie prostego filtrowania na wynikach wyszukiwania (dowolna kombinacja)
     wait = WebDriverWait(esky_wd, 20)
     filters_div = wait.until(
@@ -224,16 +242,16 @@ def main(main_url, test_params):
     print "Show filters"
     click_filter(filters_div,
                  filter_grp_id = 'filterConnections', 
-                 filter_id = "filterConnections_opt_1")
+                 filter_id = "filterConnections_opt_1") #turn on "1 change" filter 
     click_filter(filters_div,
                  filter_grp_id = 'filterDepartureTime0', 
-                 filter_id = "filterDepartureTime1_opt_12_18")    
+                 filter_id = "filterDepartureTime1_opt_12_18") #turn on "12:00 - 18:00 arrival" filter
     click_filter(filters_div,
                  filter_grp_id = 'filterDepartureTime0', 
-                 filter_id = "filterDepartureTime0_opt_12_18") 
+                 filter_id = "filterDepartureTime0_opt_12_18") #turn on "12:00 - 18:00 departure" filter
     click_filter(filters_div,
                  filter_grp_id = 'filterDepartureTime0', 
-                 filter_id = "filterDepartureTime0_opt_12_18") 
+                 filter_id = "filterDepartureTime0_opt_12_18") #turn off "12:00 - 18:00 departure" filter
     print "Task #4: using filters on results website"
     # 5.       Pobieranie kilku istotnych elementów pojedynczego lotu
     sleep(1)
