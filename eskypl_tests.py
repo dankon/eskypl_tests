@@ -259,8 +259,20 @@ def main(main_url, test_params):
         expected_conditions.visibility_of_element_located((By.ID, "available-flights"))    
     )
     available_flights = available_flights_div.find_elements_by_tag_name("form")
+    test_params_dep_arr = [test_params["flight_data"]["departure"], test_params["flight_data"]["arrival"]]
     for flight_details_link in available_flights[0].find_elements_by_link_text("szczegóły"):
-        print get_flight_details(esky_wd, flight_details_link)
+        single_flight_dict = get_flight_details(esky_wd, flight_details_link)
+        print single_flight_dict
+        assert len(single_flight_dict["all_changes"]) == 1 #check if "1 change" filter is turned on
+        assert single_flight_dict["all_single_flights"][0]["connection"]["departure"]["airport"] \
+                    in test_params_dep_arr #starting airport as departure
+        assert single_flight_dict["all_single_flights"][0]["connection"]["arrival"]["airport"] \
+                    not in test_params_dep_arr  #changing airport as arrival
+        assert single_flight_dict["all_single_flights"][-1]["connection"]["departure"]["airport"] \
+                    not in test_params_dep_arr  #changing airport as departure                  
+        assert single_flight_dict["all_single_flights"][-1]["connection"]["arrival"]["airport"] \
+                    in test_params_dep_arr #last airport as arrival
+        print "Task #7: asserts - filters and result asserts"
     print "Task #5: get single flight details"
     # 6.       Przejście na kolejny ekran płatności i wypełnienie formularza dowolnymi wartościami 
     # spełniającymi reguły walidacji
