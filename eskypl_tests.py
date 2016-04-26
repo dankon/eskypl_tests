@@ -205,6 +205,8 @@ def main(main_url, test_params):
     print "Task #2: display value of cookie %s: %s" % (
         cookie_name, esky_wd.get_cookie(cookie_name)["value"]
     )
+    # 7.       Wykonanie kilku asercji, biorąc pod uwagę dane uzyskane na formularzu wyszukiwania, 
+    # wynikach i ekranie płatności.
     assert "eSky.pl - Tanie loty" in esky_wd.title
     print "Task #7: asserts - title assert"
     # 3.       Wypełnienie danych formularza wyszukiwania 
@@ -284,8 +286,21 @@ def main(main_url, test_params):
         expected_conditions.title_is(payment_website_title)
     )
     assert esky_wd.title == payment_website_title
+    print "Task #7: asserts - title assert"
+    for connecting_info in esky_wd.find_elements_by_css_selector("span.connecting-info"):
+        assert int(connecting_info.get_attribute("data-qa-number-of-transfers")) == 1
+    print "Task #7: asserts - filter asserts"
     payments_form = esky_wd.find_element_by_css_selector("form.booking-form")
-    #TODO: 20160425-01 fix birthday_date issue
+    email_address_value = payments_form.find_element_by_id("bookFlight_contactDetails_email")\
+                                       .get_attribute('value')    
+    assert test_params["personal_data"]["email_address"] != email_address_value
+    assert email_address_value in ["", None]
+    phone_number_value = payments_form.find_element_by_id("bookFlight_contactDetails_phoneNumber_phoneNumber")\
+                                      .get_attribute('value')
+    assert  unicode(test_params["personal_data"]["phone_number"]) != phone_number_value
+    assert phone_number_value == ""
+    print "Task #7: asserts - empty form asserts"    
+    #TODO: 20160425-01 fix birthday_date issue    
     fill_payments_form(payments_form, 
                        first_name = test_params["personal_data"]["first_name"], 
                        last_name = test_params["personal_data"]["last_name"], 
@@ -294,12 +309,15 @@ def main(main_url, test_params):
                        email_address = test_params["personal_data"]["email_address"],
 #                        birthday_date=date.today()+relativedelta(years=-20)
                        )  
-    payments_form.submit()
     print "Task #6: fill up payments form"
-    # 7.       Wykonanie kilku asercji, biorąc pod uwagę dane uzyskane na formularzu wyszukiwania, 
-    # wynikach i ekranie płatności.
-    #TODO: 20160425-03 Task #7 prepare more asserts
-
+    email_address_value = payments_form.find_element_by_id("bookFlight_contactDetails_email")\
+                                       .get_attribute('value')    
+    assert test_params["personal_data"]["email_address"] == email_address_value
+    phone_number_value = payments_form.find_element_by_id("bookFlight_contactDetails_phoneNumber_phoneNumber")\
+                                      .get_attribute('value')
+    assert unicode(test_params["personal_data"]["phone_number"]) == phone_number_value
+    print "Task #7: asserts - fill up form asserts"     
+    payments_form.submit()
     esky_wd.close()
 
 if __name__ == "__main__":
