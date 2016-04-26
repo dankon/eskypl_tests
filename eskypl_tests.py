@@ -290,6 +290,7 @@ def main(main_url, test_params):
     for connecting_info in esky_wd.find_elements_by_css_selector("span.connecting-info"):
         assert int(connecting_info.get_attribute("data-qa-number-of-transfers")) == 1
     print "Task #7: asserts - filter asserts"
+    #TODO: 20160426-02 fix insurance issue
     payments_form = esky_wd.find_element_by_css_selector("form.booking-form")
     email_address_value = payments_form.find_element_by_id("bookFlight_contactDetails_email")\
                                        .get_attribute('value')    
