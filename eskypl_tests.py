@@ -89,6 +89,19 @@ def click_filter(filters_div, filter_grp_id, filter_id):
         filters_div.find_element_by_xpath("./div/a[@data-content-id='%s']" % filter_grp_id).click()
     filter.click()
 
+
+def get_flight_details(esky_webdriver, flight_details_link):
+    """
+    Function return details from single flight as a dictionary.
+    
+    """
+#     flight_details_link.click()
+#     esky_webdriver.find_element_by_xpath("//div[@class='custom-rwd-dialog-wrapper open']")
+    fl_details_dict = {'all_single_flights': [],
+                       'all_changes' : []}
+    
+    return fl_details_dict
+
     
 def fill_payments_form(payments_form, 
                        first_name, 
@@ -169,10 +182,15 @@ def main():
     print "Task #4: using filters on results website"
     # 5.       Pobieranie kilku istotnych elementów pojedynczego lotu
     #TODO: 20160425-04 Task #5 take data from single flight
+    sleep(1)
     available_flights_div = wait.until(
         expected_conditions.visibility_of_element_located((By.ID, "available-flights"))    
     )
     available_flights = available_flights_div.find_elements_by_tag_name("form")
+    for flight_details_link in available_flights[0].find_elements_by_link_text("szczegóły"):
+        print get_flight_details(esky_wd, flight_details_link)
+    print "Task #5: get single flight details"
+#     raise Exception("TESTING")
     # 6.       Przejście na kolejny ekran płatności i wypełnienie formularza dowolnymi wartościami 
     # spełniającymi reguły walidacji
     #TODO: 20160425-02 fix reserve flights issue - remove random? 
