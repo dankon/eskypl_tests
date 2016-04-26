@@ -84,26 +84,55 @@ def click_filter(filters_div, filter_grp_id, filter_id):
     # filters_div - holder of all filters as selenium/webdriver object
     # filter_grp_id - id of group of filter contain choosen one
     """   
-    filter_container = filters_div.find_element_by_xpath("./div/div[@data-dropdown-content-id='%s']" % filter_grp_id)
+    filter_container = filters_div\
+        .find_element_by_xpath("./div/div[@data-dropdown-content-id='%s']" % filter_grp_id)
     filter = filters_div.find_element_by_id(filter_id)
     if not filter_container.is_displayed():
-        filters_div.find_element_by_xpath("./div/a[@data-content-id='%s']" % filter_grp_id).click()
+        filters_div.find_element_by_xpath("./div/a[@data-content-id='%s']" % filter_grp_id)\
+            .click()
     filter.click()
 
 
 def get_flight_segment_details(flight_segment):
     """
-    Function returns details for single flight segment 
-    """    
-    return flight_segment
+    Function returns details for single flight segment as a dictionary.
+    """
+    flight_segment_dict = {}
+    flight_segment_dict['connection'] = {'departure' : {},
+                                         'arrival' : {}
+                                         }
+    #flight connection info for departure and arrival
+    flight_segment_dict['connection']['departure']['time'] = flight_segment\
+        .find_element_by_xpath(".//strong[@class='time qa-segment-departure-time']").text
+    flight_segment_dict['connection']['departure']['airport'] = flight_segment\
+        .find_element_by_xpath(".//span[@class='airport-name qa-segment-departure-airport']/"\
+                               "strong[@class='city-name']")\
+        .text
+    flight_segment_dict['connection']['arrival']['time'] = flight_segment\
+        .find_element_by_xpath(".//strong[@class='time qa-segment-arrival-time']").text
+    flight_segment_dict['connection']['arrival']['airport'] = flight_segment\
+        .find_element_by_xpath(".//span[@class='airport-name qa-segment-arrival-airport']/"\
+                               "strong[@class='city-name']")\
+        .text
+    #flight infos
+    flight_segment_dict['info'] = {}
+    flight_segment_dict['info']['flight_time'] = flight_segment\
+        .find_element_by_xpath(".//strong[@class='qa-segment-flight-time']").text
+    flight_segment_dict['info']['airline_name'] = flight_segment\
+        .find_element_by_xpath(".//strong[@class='qa-segment-airline-name']").text
+    flight_segment_dict['info']['flight_number'] = flight_segment\
+        .find_element_by_xpath(".//strong[@class='qa-segment-flight-number']").text
+    flight_segment_dict['info']['service_class'] = flight_segment\
+        .find_element_by_xpath(".//strong[@class='qa-segment-service-class']").text        
+    return flight_segment_dict
 
 def get_change_segment_details(change_segment):
     """
     Function returns details for single change segment as a dictionary.
     """
     change_segment_dict = {}
-    change_segment_dict['change_time'] = change_segment.\
-            find_element_by_xpath(".//strong[@class='qa-segment-change-time']").text
+    change_segment_dict['change_time'] = change_segment\
+            .find_element_by_xpath(".//strong[@class='qa-segment-change-time']").text
     return change_segment_dict
 
 def get_flight_details(esky_webdriver, flight_details_link):
@@ -119,7 +148,8 @@ def get_flight_details(esky_webdriver, flight_details_link):
     except WebDriverException:
         pass #TODO: 20160426-01 some problem with click on ahref inside label 
         
-    open_info_wrapper = esky_webdriver.find_element_by_xpath("//div[@class='custom-rwd-dialog-wrapper open']")
+    open_info_wrapper = esky_webdriver\
+        .find_element_by_xpath("//div[@class='custom-rwd-dialog-wrapper open']")
     for flight_segment in open_info_wrapper.find_elements_by_xpath(".//div[@class='segment']"):
         fl_details_dict['all_single_flights'].append(get_flight_segment_details(flight_segment))
     
@@ -156,7 +186,8 @@ def fill_payments_form(payments_form,
     payments_form.find_element_by_id("bookFlight_paxes_1_surname").send_keys(last_name)
     gender_select = Select(payments_form.find_element_by_id("bookFlight_paxes_1_title"))
     gender_select.select_by_value(gender)
-    payments_form.find_element_by_id("bookFlight_contactDetails_phoneNumber_phoneNumber").send_keys(phone_number)
+    payments_form.find_element_by_id("bookFlight_contactDetails_phoneNumber_phoneNumber")\
+        .send_keys(phone_number)
     payments_form.find_element_by_id("bookFlight_contactDetails_email").send_keys(email_address)
     payments_form.find_element_by_id("bookFlight_statute").click()
 
@@ -187,7 +218,7 @@ def main():
     flights_form.submit()
     print "Task #3: fill up flights form from %s" % main_url
     # 4.       Wykonanie prostego filtrowania na wynikach wyszukiwania (dowolna kombinacja)
-    wait = WebDriverWait(esky_wd, 10)
+    wait = WebDriverWait(esky_wd, 20)
     filters_div = wait.until(
         expected_conditions.visibility_of_element_located((By.ID, "filters"))    
     )
