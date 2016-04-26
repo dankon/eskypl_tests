@@ -130,8 +130,8 @@ def main():
     # 1.       Otworzenie strony
     main_url = "http://www.esky.pl/"
     esky_wd = webdriver.Firefox()
-    print "Task #1: opening website: %s" % main_url
     esky_wd.get(main_url)
+    print "Task #1: opening website: %s" % main_url
     # 2.       Pobranie i wyświetlenie w konsoli wartości ciastka esky_TCSI
     cookie_name = "esky_TCSI"
     print "Task #2: display value of cookie %s: %s" % (
@@ -140,13 +140,13 @@ def main():
     # 3.       Wypełnienie danych formularza wyszukiwania 
     #(parametryzowane destynacje oraz daty wylotu/powrotu wyliczane zawsze 3mce do przodu)
     flights_form = esky_wd.find_element_by_css_selector("form.flights-qsf")
-    print "Task #3: fill up flights form from %s" % main_url
     fill_flights_form(flights_form, 
                       departure="Hamburg", 
                       arrival="Katowice", 
                       dep_date=date.today()+relativedelta(days=+10)
                       )
     flights_form.submit()
+    print "Task #3: fill up flights form from %s" % main_url
     # 4.       Wykonanie prostego filtrowania na wynikach wyszukiwania (dowolna kombinacja)
     wait = WebDriverWait(esky_wd, 10)
     filters_div = wait.until(
