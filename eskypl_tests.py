@@ -238,7 +238,6 @@ def main():
                  filter_id = "filterDepartureTime0_opt_12_18") 
     print "Task #4: using filters on results website"
     # 5.       Pobieranie kilku istotnych elementów pojedynczego lotu
-    #TODO: 20160425-04 Task #5 take data from single flight
     sleep(1)
     available_flights_div = wait.until(
         expected_conditions.visibility_of_element_located((By.ID, "available-flights"))    
