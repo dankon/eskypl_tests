@@ -96,14 +96,17 @@ def get_flight_details(esky_webdriver, flight_details_link):
     Function return details from single flight as a dictionary.
     
     """
+    fl_details_dict = {'all_single_flights': [],
+                       'all_changes' : []}
+
     try:
         flight_details_link.click()
     except WebDriverException:
         pass #TODO: 20160426-01 some problem with click on ahref inside label 
         
     open_info_wrapper = esky_webdriver.find_element_by_xpath("//div[@class='custom-rwd-dialog-wrapper open']")
-    fl_details_dict = {'all_single_flights': [],
-                       'all_changes' : []}
+    fl_details_dict['all_single_flights'] = open_info_wrapper.find_elements_by_xpath(".//div[@class='segment']")
+    fl_details_dict['all_changes'] = open_info_wrapper.find_elements_by_xpath(".//div[@class='segment-change']")
     open_info_wrapper.find_element_by_xpath(".//i[@class='qa-dialog-closse']").click()
     return fl_details_dict
 
@@ -216,7 +219,7 @@ def main():
 #                        birthday_date=date.today()+relativedelta(years=-20)
                        )
     payments_form.submit()
-    print "Task #6 fill up payments form"
+    print "Task #6: fill up payments form"
     # 7.       Wykonanie kilku asercji, biorąc pod uwagę dane uzyskane na formularzu wyszukiwania, 
     # wynikach i ekranie płatności.
     #TODO: 20160425-03 Task #7 prepare more asserts
