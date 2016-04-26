@@ -178,7 +178,7 @@ def fill_payments_form(payments_form,
     """
 #      birthday_date
 #     """
-    _genders = ["mrs", "mr"]
+    _genders = [u"mrs", u"mr"]
     if not gender in _genders:
         raise Exception('Bad gender value %s - please choose from %s' % (gender, _genders))
     payments_form.find_element_by_id("bookFlight_paxes_1_name").send_keys(first_name)
@@ -275,15 +275,15 @@ def main(main_url, test_params):
 if __name__ == "__main__":
     print "START"
     main_url = "http://www.esky.pl/"
-    test_params = {"flight_data" : {"departure" : "Hamburg", 
-                                    "arrival" : "Katowice", 
+    test_params = {"flight_data" : {"departure" : u"Hamburg", 
+                                    "arrival" : u"Katowice", 
                                     "departure_date" : date.today() + relativedelta(days=+10)
                                     },
-                   "personal_data" : {"first_name" : "John", 
-                                      "last_name" : "Doe", 
-                                      "gender" : "mr", 
+                   "personal_data" : {"first_name" : u"John", 
+                                      "last_name" : u"Doe", 
+                                      "gender" : u"mr", 
                                       "phone_number" : 789456123, 
-                                      "email_address" : "john.doe@hotmail.com"
+                                      "email_address" : u"john.doe@hotmail.com"
                                       }
                    }
     main(main_url, test_params)
