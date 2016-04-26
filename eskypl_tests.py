@@ -91,9 +91,24 @@ def click_filter(filters_div, filter_grp_id, filter_id):
     filter.click()
 
 
+def get_flight_segment_details(flight_segment):
+    """
+    Function returns details for single flight segment 
+    """    
+    return flight_segment
+
+def get_change_segment_details(change_segment):
+    """
+    Function returns details for single change segment as a dictionary.
+    """
+    change_segment_dict = {}
+    change_segment_dict['change_time'] = change_segment.\
+            find_element_by_xpath(".//strong[@class='qa-segment-change-time']").text
+    return change_segment_dict
+
 def get_flight_details(esky_webdriver, flight_details_link):
     """
-    Function return details from single flight as a dictionary.
+    Function returns details for single flight as a dictionary.
     
     """
     fl_details_dict = {'all_single_flights': [],
@@ -105,8 +120,12 @@ def get_flight_details(esky_webdriver, flight_details_link):
         pass #TODO: 20160426-01 some problem with click on ahref inside label 
         
     open_info_wrapper = esky_webdriver.find_element_by_xpath("//div[@class='custom-rwd-dialog-wrapper open']")
-    fl_details_dict['all_single_flights'] = open_info_wrapper.find_elements_by_xpath(".//div[@class='segment']")
-    fl_details_dict['all_changes'] = open_info_wrapper.find_elements_by_xpath(".//div[@class='segment-change']")
+    for flight_segment in open_info_wrapper.find_elements_by_xpath(".//div[@class='segment']"):
+        fl_details_dict['all_single_flights'].append(get_flight_segment_details(flight_segment))
+    
+    for change_segment in open_info_wrapper.find_elements_by_xpath(".//div[@class='segment-change']"):
+        fl_details_dict['all_changes'].append(get_change_segment_details(change_segment))
+    
     open_info_wrapper.find_element_by_xpath(".//i[@class='qa-dialog-closse']").click()
     return fl_details_dict
 
@@ -140,7 +159,6 @@ def fill_payments_form(payments_form,
     payments_form.find_element_by_id("bookFlight_contactDetails_phoneNumber_phoneNumber").send_keys(phone_number)
     payments_form.find_element_by_id("bookFlight_contactDetails_email").send_keys(email_address)
     payments_form.find_element_by_id("bookFlight_statute").click()
-#     payments_form.find_element_by_id(
 
 
 def main():
@@ -198,7 +216,6 @@ def main():
     for flight_details_link in available_flights[0].find_elements_by_link_text("szczegóły"):
         print get_flight_details(esky_wd, flight_details_link)
     print "Task #5: get single flight details"
-#     raise Exception("TESTING")
     # 6.       Przejście na kolejny ekran płatności i wypełnienie formularza dowolnymi wartościami 
     # spełniającymi reguły walidacji
     #TODO: 20160425-02 fix reserve flights issue - remove random? 
