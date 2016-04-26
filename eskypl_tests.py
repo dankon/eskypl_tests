@@ -14,6 +14,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
+from selenium.common.exceptions import WebDriverException
 
 MONTHS_PL = {1 : u"styczeń",   
              2 : u"luty",
@@ -95,11 +96,15 @@ def get_flight_details(esky_webdriver, flight_details_link):
     Function return details from single flight as a dictionary.
     
     """
-#     flight_details_link.click()
-#     esky_webdriver.find_element_by_xpath("//div[@class='custom-rwd-dialog-wrapper open']")
+    try:
+        flight_details_link.click()
+    except WebDriverException:
+        pass #TODO: 20160426-01 some problem with click on ahref inside label 
+        
+    open_info_wrapper = esky_webdriver.find_element_by_xpath("//div[@class='custom-rwd-dialog-wrapper open']")
     fl_details_dict = {'all_single_flights': [],
                        'all_changes' : []}
-    
+    open_info_wrapper.find_element_by_xpath(".//i[@class='qa-dialog-closse']").click()
     return fl_details_dict
 
     
