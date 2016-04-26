@@ -6,7 +6,6 @@ by Selenium/Webdriver Python module.
 """
 from datetime import date
 from time import sleep
-from random import sample
 
 from dateutil.relativedelta import relativedelta
 from selenium import webdriver
@@ -248,8 +247,8 @@ def main():
     print "Task #5: get single flight details"
     # 6.       Przejście na kolejny ekran płatności i wypełnienie formularza dowolnymi wartościami 
     # spełniającymi reguły walidacji
-    #TODO: 20160425-02 fix reserve flights issue - remove random? 
-    sample(available_flights, 1)[0].find_element_by_xpath("./div[1]/a").click()
+    #TODO: 20160425-02 fix reserve flights issue
+    available_flights[0].find_element_by_xpath("./div[1]/a").click()
     payment_website_title = u"eSky: Hamburg - Katowice"
     wait.until(
         expected_conditions.title_is(payment_website_title)
@@ -271,7 +270,7 @@ def main():
     # wynikach i ekranie płatności.
     #TODO: 20160425-03 Task #7 prepare more asserts
 
-#     esky_wd.close()
+    esky_wd.close()
 
 if __name__ == "__main__":
     print "START"
